@@ -1,0 +1,21 @@
+version: '3.9'
+services:
+  pingguard-db:
+    image: timescale/timescaledb:latest-pg16
+    container_name: pingguard-db
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: pingguard
+      POSTGRES_USER: pingguard_admin
+      POSTGRES_PASSWORD: my_super_secret_password_123
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pingguard_admin -d pingguard"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  pgdata:

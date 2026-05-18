@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: pingguard-server
+
+  datasource:
+    url: jdbc:postgresql://localhost:5433/pingguard
+    username: pingguard_admin
+    password: my_super_secret_password_123
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update          # Phase 1-3 only; switch to Flyway later
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+  quartz:
+    job-store-type: jdbc         # Persistent job store
+    jdbc:
+      initialize-schema: always  # Auto-create Quartz tables
+    properties:
+      org.quartz.threadPool.threadCount: 10
+
+server:
+  port: 8080

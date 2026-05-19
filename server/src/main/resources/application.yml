@@ -22,7 +22,7 @@ spring:
     jdbc:
       initialize-schema: always  # Auto-create Quartz tables
     properties:
-      org.quartz.threadPool.threadCount: 10
+      org.quartz.jobStore.driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
 
 server:
   port: 8080

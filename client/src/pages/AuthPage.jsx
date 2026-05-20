@@ -4,19 +4,19 @@ import { api } from '../api/client';
 import { useAuthStore } from '../store/useAuthStore';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
+import { toast } from 'sonner';
+import { motion } from 'framer-motion';
 
 export const AuthPage = () => {
     const [isLogin, setIsLogin] = useState(true);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [displayName, setDisplayName] = useState('');
-    const [error, setError] = useState('');
     const login = useAuthStore((state) => state.login);
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError('');
         try {
             const endpoint = isLogin ? '/auth/login' : '/auth/register';
             const payload = isLogin 
@@ -25,25 +25,24 @@ export const AuthPage = () => {
                 
             const { data } = await api.post(endpoint, payload);
             login(data.token, data.email, data.displayName);
+            toast.success("Welcome to PingGuard!");
             navigate('/dashboard');
         } catch (err) {
-            setError(err.response?.data?.message || 'Authentication failed');
+            toast.error(err.response?.data?.message || 'Authentication failed');
         }
     };
 
     return (
-        <div className="min-h-screen bg-[#99E1D9] flex items-center justify-center p-4">
-            <div className="bg-white border-4 border-black p-8 max-w-md w-full shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
+        <div className="flex-grow flex items-center justify-center p-4 py-12 bg-[#FF847C]">
+            <motion.div 
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="bg-white border-4 border-black p-8 max-w-md w-full shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
+            >
                 <h1 className="text-4xl font-black mb-6 uppercase tracking-tight">
-                    {isLogin ? 'Welcome Back' : 'Join PingGuard'}
+                    {isLogin ? 'Welcome Back' : 'Join Us'}
                 </h1>
                 
-                {error && (
-                    <div className="bg-[#FF847C] text-black border-4 border-black font-bold p-3 mb-6">
-                        {error}
-                    </div>
-                )}
-
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {!isLogin && (
                         <div>
@@ -76,7 +75,7 @@ export const AuthPage = () => {
                         />
                     </div>
 
-                    <Button type="submit" variant="primary" className="w-full text-xl mt-4">
+                    <Button type="submit" variant="dark" className="w-full text-xl mt-4">
                         {isLogin ? 'Login' : 'Create Account'}
                     </Button>
                 </form>
@@ -93,7 +92,7 @@ export const AuthPage = () => {
                         {isLogin ? 'Sign Up Now' : 'Login Instead'}
                     </Button>
                 </div>
-            </div>
+            </motion.div>
         </div>
     );
 };

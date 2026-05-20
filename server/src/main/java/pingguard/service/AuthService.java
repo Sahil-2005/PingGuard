@@ -60,4 +60,23 @@ public class AuthService {
 
         return new AuthResponse(jwtToken, user.getEmail(), user.getDisplayName());
     }
+
+    @Transactional
+    public AuthResponse updateProfile(pingguard.dto.request.UpdateProfileRequest request, User currentUser) {
+        User user = userRepository.findById(currentUser.getId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setDisplayName(request.displayName());
+        
+        if (request.newPassword() != null && !request.newPassword().isBlank()) {
+            user.setPasswordHash(passwordEncoder.encode(request.newPassword()));
+        }
+
+        userRepository.save(user);
+
+        SecurityUser securityUser = new SecurityUser(user);
+        String jwtToken = jwtService.generateToken(securityUser);
+
+        return new AuthResponse(jwtToken, user.getEmail(), user.getDisplayName());
+    }
 }

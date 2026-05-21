@@ -45,6 +45,7 @@ public class AnalyticsService {
      * @return populated {@link AnalyticsSummaryResponse}
      * @throws ResponseStatusException 404 if monitor not found, 403 if not the owner
      */
+    @Transactional
     public AnalyticsSummaryResponse getSummary(UUID monitorId, UUID requestingUserId) {
 
         // --- ownership check ------------------------------------------------
@@ -56,6 +57,10 @@ public class AnalyticsService {
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN, "You do not have access to this monitor");
         }
+
+        // --- manual aggregate refresh ---------------------------------------
+        // Aiven free tier lacks background policies, so we refresh on-demand.
+        analyticsRepository.refreshContinuousAggregate();
 
         // --- fetch uptime summaries -----------------------------------------
         UptimeSummaryProjection summary24h = analyticsRepository.getUptime24h(monitorId);

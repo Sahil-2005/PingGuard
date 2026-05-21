@@ -19,6 +19,14 @@ import java.util.UUID;
 public interface AnalyticsRepository extends JpaRepository<PingResult, UUID> {
 
     // -------------------------------------------------------------------------
+    // Continuous Aggregate Refresh
+    // -------------------------------------------------------------------------
+
+    @org.springframework.data.jpa.repository.Modifying
+    @Query(value = "CALL refresh_continuous_aggregate('ping_results_hourly', NULL, NULL)", nativeQuery = true)
+    void refreshContinuousAggregate();
+
+    // -------------------------------------------------------------------------
     // Uptime Summary Projections
     // -------------------------------------------------------------------------
 

@@ -2,7 +2,8 @@ import axios from 'axios';
 import { useAuthStore } from '../store/useAuthStore';
 
 export const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || '/api'
+    // baseURL: import.meta.env.VITE_API_URL || 'https://pingguard-otiz.onrender.com/api'
+    baseURL: 'https://pingguard-otiz.onrender.com/api' || import.meta.env.VITE_API_URL
 });
 
 api.interceptors.request.use(config => {

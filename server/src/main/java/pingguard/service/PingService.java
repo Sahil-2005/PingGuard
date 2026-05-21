@@ -9,6 +9,10 @@ import pingguard.entity.MonitorStatus;
 import pingguard.entity.PingResult;
 import pingguard.repository.MonitorRepository;
 import pingguard.repository.PingResultRepository;
+import pingguard.repository.IncidentRepository;
+import pingguard.entity.Incident;
+import pingguard.event.MonitorStatusChangedEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
@@ -23,6 +27,8 @@ public class PingService {
     private final WebClient pingWebClient;
     private final PingResultRepository pingResultRepository;
     private final MonitorRepository monitorRepository;
+    private final IncidentRepository incidentRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public Mono<PingResult> executeCheck(Monitor monitor) {
         Instant start = Instant.now();
@@ -53,11 +59,39 @@ public class PingService {
                 .publishOn(Schedulers.boundedElastic())
                 .doOnNext(result -> {
                     pingResultRepository.save(result);
-                    monitor.setStatus(result.isSuccess() ? MonitorStatus.UP : MonitorStatus.DOWN);
-                    monitorRepository.save(monitor);
+                    
+                    MonitorStatus oldStatus = monitor.getStatus();
+                    MonitorStatus newStatus = result.isSuccess() ? MonitorStatus.UP : MonitorStatus.DOWN;
+                    
+                    if (oldStatus != newStatus) {
+                        monitor.setStatus(newStatus);
+                        monitorRepository.save(monitor);
+                        
+                        Incident incident = null;
+                        
+                        if (newStatus == MonitorStatus.DOWN) {
+                            // Create a new incident
+                            incident = new Incident();
+                            incident.setMonitor(monitor);
+                            incident.setCause(result.getErrorMessage() != null ? result.getErrorMessage() : "Status Code: " + result.getStatusCode());
+                            incidentRepository.save(incident);
+                        } else if (newStatus == MonitorStatus.UP) {
+                            // Resolve existing incident
+                            var openIncident = incidentRepository.findFirstByMonitorIdAndEndTimeIsNullOrderByStartTimeDesc(monitor.getId());
+                            if (openIncident.isPresent()) {
+                                incident = openIncident.get();
+                                incident.setEndTime(Instant.now());
+                                incidentRepository.save(incident);
+                            }
+                        }
+                        
+                        // Publish event
+                        eventPublisher.publishEvent(new MonitorStatusChangedEvent(this, monitor, oldStatus, newStatus, incident));
+                    }
+                    
                     log.info("Ping {} → {} ({}ms)",
                             monitor.getUrl(),
-                            result.isSuccess() ? "UP" : "DOWN",
+                            newStatus,
                             result.getResponseTimeMs());
                 });
     }

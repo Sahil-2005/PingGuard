@@ -2,6 +2,18 @@ spring:
   application:
     name: pingguard-server
 
+  mail:
+    host: sandbox.smtp.mailtrap.io
+    port: 2525
+    username: 9374998f5a4010
+    password: 6a109676561ac8
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
   datasource:
     url: jdbc:postgresql://localhost:5433/pingguard
     username: pingguard_admin

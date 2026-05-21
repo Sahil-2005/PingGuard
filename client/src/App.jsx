@@ -5,6 +5,7 @@ import { LandingPage } from './pages/LandingPage';
 import { AuthPage } from './pages/AuthPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { ProfilePage } from './pages/ProfilePage';
+import { MonitorDetailsPage } from './pages/MonitorDetailsPage';
 import { useAuthStore } from './store/useAuthStore';
 
 const ProtectedRoute = ({ children }) => {
@@ -27,6 +28,7 @@ function App() {
                     <Route path="/" element={<LandingPage />} />
                     <Route path="/login" element={<PublicRoute><AuthPage /></PublicRoute>} />
                     <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+                    <Route path="/dashboard/monitors/:id" element={<ProtectedRoute><MonitorDetailsPage /></ProtectedRoute>} />
                     <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
                 </Routes>
             </AppLayout>

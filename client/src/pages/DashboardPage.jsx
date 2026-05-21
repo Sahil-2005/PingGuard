@@ -4,13 +4,15 @@ import { api } from '../api/client';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { useQueryClient } from '@tanstack/react-query';
-import { Plus, Trash2, Globe } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Plus, Trash2, Globe, Activity } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export const DashboardPage = () => {
     const { data: monitors, isLoading } = useMonitors();
     const queryClient = useQueryClient();
+    const navigate = useNavigate();
 
     const [showAddForm, setShowAddForm] = useState(false);
     const [newMonitor, setNewMonitor] = useState({ name: '', url: '', intervalSeconds: 60 });
@@ -107,6 +109,9 @@ export const DashboardPage = () => {
                                 <span className="truncate">{monitor.url}</span>
                             </div>
                             <div className="mt-auto flex gap-4 pt-4 border-t-4 border-black">
+                                <Button variant="primary" onClick={() => navigate(`/dashboard/monitors/${monitor.id}`)} className="w-full flex justify-center items-center gap-2">
+                                    <Activity size={20} /> Analytics
+                                </Button>
                                 <Button variant="secondary" onClick={() => handleDelete(monitor.id)} className="w-full flex justify-center items-center gap-2">
                                     <Trash2 size={20} /> Delete
                                 </Button>

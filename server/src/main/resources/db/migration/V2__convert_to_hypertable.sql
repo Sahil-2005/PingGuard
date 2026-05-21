@@ -74,6 +74,8 @@
 -- );
 
 
+
+
 -- 1. Drop the existing primary key 
 ALTER TABLE ping_results DROP CONSTRAINT IF EXISTS ping_results_pkey;
 
@@ -83,9 +85,8 @@ ALTER TABLE ping_results ADD PRIMARY KEY (id, checked_at);
 -- 3. Convert the standard PostgreSQL table into a TimescaleDB Hypertable
 SELECT create_hypertable('ping_results', 'checked_at', migrate_data => true);
 
--- 4. Create the Continuous Aggregate Materialized View for Analytics
-CREATE MATERIALIZED VIEW ping_results_hourly
-WITH (timescaledb.continuous) AS
+-- 4. Create a Standard View (Dynamic, Real-time, No transaction blocks!)
+CREATE VIEW ping_results_hourly AS
 SELECT
     time_bucket('1 hour', checked_at) AS bucket,
     monitor_id,
@@ -94,6 +95,4 @@ SELECT
     COUNT(*) AS total_pings,
     COUNT(*) FILTER (WHERE success = true) AS successful_pings
 FROM ping_results
-GROUP BY bucket, monitor_id
-WITH NO DATA; 
--- ^^^ THIS LINE IS THE FIX ^^^
+GROUP BY bucket, monitor_id;

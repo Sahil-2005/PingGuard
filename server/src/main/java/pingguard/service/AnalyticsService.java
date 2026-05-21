@@ -60,7 +60,7 @@ public class AnalyticsService {
 
         // --- manual aggregate refresh ---------------------------------------
         // Aiven free tier lacks background policies, so we refresh on-demand.
-        analyticsRepository.refreshContinuousAggregate();
+        // analyticsRepository.refreshContinuousAggregate();
 
         // --- fetch uptime summaries -----------------------------------------
         UptimeSummaryProjection summary24h = analyticsRepository.getUptime24h(monitorId);

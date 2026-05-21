@@ -58,4 +58,13 @@ public class AnalyticsController {
         );
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/{id}/incidents")
+    public ResponseEntity<java.util.List<pingguard.dto.response.IncidentResponse>> getIncidents(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal SecurityUser securityUser
+    ) {
+        var response = analyticsService.getIncidents(id, securityUser.getUser().getId());
+        return ResponseEntity.ok(response);
+    }
 }

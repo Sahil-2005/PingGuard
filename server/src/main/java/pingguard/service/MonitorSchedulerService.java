@@ -10,8 +10,11 @@ import org.quartz.SchedulerException;
 import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
+import org.springframework.context.event.EventListener;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.stereotype.Service;
 import pingguard.entity.Monitor;
+import pingguard.repository.MonitorRepository;
 import pingguard.job.PingUrlJob;
 
 import java.util.UUID;
@@ -22,6 +25,20 @@ import java.util.UUID;
 public class MonitorSchedulerService {
 
     private final Scheduler scheduler;
+    private final MonitorRepository monitorRepository;
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void syncMonitorsOnStartup() {
+        log.info("Synchronizing monitors with Quartz Scheduler on startup...");
+        monitorRepository.findAll().forEach(monitor -> {
+            try {
+                scheduleMonitor(monitor);
+            } catch (SchedulerException e) {
+                log.error("Failed to schedule monitor on startup: {}", monitor.getId(), e);
+            }
+        });
+        log.info("Monitor synchronization complete.");
+    }
 
     public void scheduleMonitor(Monitor monitor) throws SchedulerException {
         String jobId = "ping-" + monitor.getId();

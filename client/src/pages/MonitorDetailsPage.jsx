@@ -4,11 +4,14 @@ import { useMonitorAnalytics } from '../hooks/useAnalytics';
 import { MetricCard } from '../components/analytics/MetricCard';
 import { UptimeBar } from '../components/analytics/UptimeBar';
 import { LatencyChart } from '../components/analytics/LatencyChart';
+import { IncidentHistory } from '../components/analytics/IncidentHistory';
+import { useIncidents } from '../hooks/useIncidents';
 import { ArrowLeft, Activity, Clock, ServerCrash } from 'lucide-react';
 
 export const MonitorDetailsPage = () => {
     const { id } = useParams();
     const { data: analytics, isLoading, isError, error } = useMonitorAnalytics(id);
+    const { data: incidents, isLoading: isIncidentsLoading } = useIncidents(id);
 
     if (isLoading) {
         return (
@@ -98,6 +101,9 @@ export const MonitorDetailsPage = () => {
 
             {/* Latency Chart */}
             <LatencyChart data={analytics.latencySeries} />
+            
+            {/* Incident History */}
+            {!isIncidentsLoading && <IncidentHistory incidents={incidents} />}
             
         </div>
     );

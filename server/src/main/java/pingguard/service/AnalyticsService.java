@@ -13,7 +13,9 @@ import pingguard.repository.AnalyticsRepository;
 import pingguard.repository.AnalyticsRepository.DailyUptimeProjection;
 import pingguard.repository.AnalyticsRepository.LatencyBucketProjection;
 import pingguard.repository.AnalyticsRepository.UptimeSummaryProjection;
+import pingguard.repository.IncidentRepository;
 import pingguard.repository.MonitorRepository;
+import pingguard.dto.response.IncidentResponse;
 
 import java.util.List;
 import java.util.UUID;
@@ -33,6 +35,7 @@ public class AnalyticsService {
 
     private final MonitorRepository    monitorRepository;
     private final AnalyticsRepository  analyticsRepository;
+    private final IncidentRepository   incidentRepository;
 
     /**
      * Returns a complete analytics summary for the given monitor.
@@ -91,6 +94,21 @@ public class AnalyticsService {
                 latencySeries,
                 dailyUptime
         );
+    }
+
+    public List<IncidentResponse> getIncidents(UUID monitorId, UUID requestingUserId) {
+        Monitor monitor = monitorRepository.findById(monitorId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Monitor not found"));
+
+        if (!monitor.getOwner().getId().equals(requestingUserId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "You do not have access to this monitor");
+        }
+
+        return incidentRepository.findByMonitorIdOrderByStartTimeDesc(monitorId).stream()
+                .map(i -> new IncidentResponse(i.getId(), i.getStartTime(), i.getEndTime(), i.getCause()))
+                .toList();
     }
 
     // -------------------------------------------------------------------------

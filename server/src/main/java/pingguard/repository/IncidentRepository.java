@@ -12,4 +12,7 @@ public interface IncidentRepository extends JpaRepository<Incident, UUID> {
     
     // Finds an open incident (no end time) for a specific monitor
     Optional<Incident> findFirstByMonitorIdAndEndTimeIsNullOrderByStartTimeDesc(UUID monitorId);
+
+    // Finds all incidents for a specific monitor, ordered by start time descending
+    java.util.List<Incident> findByMonitorIdOrderByStartTimeDesc(UUID monitorId);
 }

@@ -5,8 +5,8 @@ spring:
   mail:
     host: sandbox.smtp.mailtrap.io
     port: 2525
-    username: 9374998f5a4010
-    password: 6a109676561ac8
+    username: ${MAIL_USER:9374998f5a4010}          # 🔄 Updated for environment injection
+    password: ${MAIL_PASSWORD:6a109676561ac8}      # 🔄 Updated for environment injection
     properties:
       mail:
         smtp:
@@ -15,9 +15,9 @@ spring:
             enable: true
 
   datasource:
-    url: jdbc:postgresql://localhost:5433/pingguard
-    username: pingguard_admin
-    password: my_super_secret_password_123
+    url: ${DB_URL:jdbc:postgresql://localhost:5433/pingguard}               # 🔄 Updated for Aiven production URI
+    username: ${DB_USER:pingguard_admin}                                   # 🔄 Updated for Aiven username
+    password: ${DB_PASSWORD:my_super_secret_password_123}                   # 🔄 Updated for Aiven password
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -40,9 +40,14 @@ spring:
   quartz:
     job-store-type: jdbc         # Persistent job store
     jdbc:
-      initialize-schema: always  # Auto-create Quartz tables
+      initialize-schema: ${QUARTZ_INIT:never}  # 🔄 Changed from 'always' to 'never' because Flyway V5 manages it now
     properties:
       org.quartz.jobStore.driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
+
+# 🔄 Added JWT configuration block to allow Render to inject a secure production key
+jwt:
+  secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
+  expiration: 86400000
 
 server:
   port: 8080

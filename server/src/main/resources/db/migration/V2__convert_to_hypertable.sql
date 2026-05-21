@@ -94,4 +94,6 @@ SELECT
     COUNT(*) AS total_pings,
     COUNT(*) FILTER (WHERE success = true) AS successful_pings
 FROM ping_results
-GROUP BY bucket, monitor_id;
+GROUP BY bucket, monitor_id
+WITH NO DATA; 
+-- ^^^ THIS LINE IS THE FIX ^^^

@@ -56,7 +56,7 @@ public interface AnalyticsRepository extends JpaRepository<PingResult, UUID> {
     @Query(value = """
             SELECT
                 ROUND(
-                    100.0 * SUM(successful_checks)
+                    100.0 * SUM(successful_pings)
                     / NULLIF(SUM(total_checks), 0),
                     2
                 )                            AS uptimePercentage,
@@ -75,7 +75,7 @@ public interface AnalyticsRepository extends JpaRepository<PingResult, UUID> {
     @Query(value = """
             SELECT
                 ROUND(
-                    100.0 * SUM(successful_checks)
+                    100.0 * SUM(successful_pings)
                     / NULLIF(SUM(total_checks), 0),
                     2
                 )                            AS uptimePercentage,
@@ -116,7 +116,7 @@ public interface AnalyticsRepository extends JpaRepository<PingResult, UUID> {
             SELECT
                 time_bucket('1 day', bucket)::date        AS day,
                 ROUND(
-                    100.0 * SUM(successful_checks)
+                    100.0 * SUM(successful_pings)
                     / NULLIF(SUM(total_checks), 0),
                     2
                 )                                         AS uptimePct

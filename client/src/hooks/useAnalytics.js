@@ -40,7 +40,7 @@ export const useMonitorAnalytics = (id) => {
     return useQuery({
         queryKey: ['monitors', id, 'analytics'],
         queryFn: async () => {
-            const { data } = await api.get(`/monitors/${id}/analytics`);
+            const { data } = await api.get(`/monitors/${id}/stats`);
             return data;
         },
         enabled: !!id,

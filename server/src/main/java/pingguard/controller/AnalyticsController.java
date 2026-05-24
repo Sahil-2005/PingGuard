@@ -47,7 +47,7 @@ public class AnalyticsController {
      *         404 if the monitor does not exist
      *         403 if the monitor belongs to a different user
      */
-    @GetMapping("/{id}/analytics")
+    @GetMapping("/{id}/stats")
     public ResponseEntity<AnalyticsSummaryResponse> getAnalytics(
             @PathVariable UUID id,
             @AuthenticationPrincipal SecurityUser securityUser

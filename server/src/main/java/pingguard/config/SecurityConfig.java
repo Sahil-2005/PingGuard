@@ -123,7 +123,8 @@ public class SecurityConfig {
                         "/swagger-ui/**",
                         "/",
                         "/swagger-ui.html",
-                        "/" // Allow the base URL for health checks
+                        "/error",
+                        "/actuator/health"
                 ).permitAll()
                 .anyRequest().authenticated()
             )

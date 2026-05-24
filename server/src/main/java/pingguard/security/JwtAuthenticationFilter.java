@@ -23,6 +23,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
 
+
+
+    @Override
+    protected boolean shouldNotFilter(@NonNull HttpServletRequest request) throws ServletException {
+        String path = request.getRequestURI();
+        
+        // Skip JWT validation for public endpoints
+        return path.startsWith("/api/auth/") || 
+               path.startsWith("/swagger-ui/") || 
+               path.startsWith("/v3/api-docs") || 
+               path.equals("/swagger-ui.html") || 
+               path.equals("/") || 
+               path.equals("/error");
+    }
+
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,

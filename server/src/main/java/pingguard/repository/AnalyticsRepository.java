@@ -57,7 +57,7 @@ public interface AnalyticsRepository extends JpaRepository<PingResult, UUID> {
             SELECT
                 ROUND(
                     100.0 * SUM(successful_pings)
-                    / NULLIF(SUM(total_checks), 0),
+                    / NULLIF(SUM(total_pings), 0),
                     2
                 )                            AS uptimePercentage,
                 ROUND(AVG(avg_latency_ms)::numeric, 2) AS avgLatencyMs
@@ -76,7 +76,7 @@ public interface AnalyticsRepository extends JpaRepository<PingResult, UUID> {
             SELECT
                 ROUND(
                     100.0 * SUM(successful_pings)
-                    / NULLIF(SUM(total_checks), 0),
+                    / NULLIF(SUM(total_pings), 0),
                     2
                 )                            AS uptimePercentage,
                 ROUND(AVG(avg_latency_ms)::numeric, 2) AS avgLatencyMs
@@ -117,7 +117,7 @@ public interface AnalyticsRepository extends JpaRepository<PingResult, UUID> {
                 time_bucket('1 day', bucket)::date        AS day,
                 ROUND(
                     100.0 * SUM(successful_pings)
-                    / NULLIF(SUM(total_checks), 0),
+                    / NULLIF(SUM(total_pings), 0),
                     2
                 )                                         AS uptimePct
             FROM ping_results_hourly

@@ -75,8 +75,10 @@ spring:
     driver-class-name: org.postgresql.Driver
     # 👇 NEW: Increased pool size so web traffic and Quartz don't fight
     hikari:
-      maximum-pool-size: 20
-      connection-timeout: 20000
+      maximum-pool-size: 5
+      minimum-idle: 1
+      connection-timeout: 30000
+      idle-timeout: 600000
 
   jpa:
     hibernate:
